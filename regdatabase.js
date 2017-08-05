@@ -1,6 +1,6 @@
 var config = require("./config");
 var mongoClient = require("mongodb").MongoClient;
-
+//Резил крудоподобного на монго-дб. не актуально, если использовать Mongoose
 module.exports.add = function(obj){
     mongoClient.connect(config.url,function(err,db){
         var collection = db.collection("users");

@@ -23,7 +23,7 @@ srv.get(routes.updateCredentials,jsonParser,function(request,response){
 })
 srv.get(routes.getCredentials,jsonParser,function(request,response){
     if(!request.body) return response.sendStatus(400);
-    //var res = db.get(request.id); Дореализовать
+    //var res = db.get(request.id); Дореализовать в монгодб
     response.json(res);
 })
 srv.listen(3000);
