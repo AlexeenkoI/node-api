@@ -1,7 +1,7 @@
 var mongoose = require('mongoose');
-var userShema = new mongoose.Schema({
+var userSchema = new mongoose.Schema({
     
-    id : Number, 
+    //id : Number, 
 
     username:{
         type:String, 
@@ -20,8 +20,8 @@ var userShema = new mongoose.Schema({
         match:[/^[A-Za-z0-9]+$/,"passwordIncorrect"]                
     },
 
-    date : Date,
-    token : String,
+    // date : Date,
+    // token : String,
 });
 
-module.exports = mongoose.model('User',userSchema);
+module.exports.user = mongoose.model('User',userSchema);
