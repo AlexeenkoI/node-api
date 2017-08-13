@@ -37,10 +37,18 @@ srv.get(routes.updateCredentials,jsonParser,function(request,response){
     //var res = db.update(request.body); Дореализовать
     response.json({status:"ok"});
 })
-srv.get(routes.getCredentials,jsonParser,function(request,response){
+srv.post(routes.getCredentials,jsonParser,function(request,response){
     if(!request.body) return response.sendStatus(400);
-    //var res = db.get(request.id); Дореализовать в монгодб
-    response.json(res);
+    console.log("here");
+    var searchmodel = {
+        username: request.body.username,
+        password: request.body.password
+    }
+    User.find(searchmodel,function(error,data){
+        if(error) response.sendStatus(404);
+
+        response.json(data);
+    })
 })
 
 
