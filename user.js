@@ -20,7 +20,7 @@ var userSchema = new mongoose.Schema({
         match:[/^[A-Za-z0-9]+$/,"passwordIncorrect"]                
     },
 
-    // date : Date,
+     date : Date,
     // token : String,
 });
 

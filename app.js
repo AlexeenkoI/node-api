@@ -18,7 +18,8 @@ srv.post(routes.Reg,jsonParser,function(request,response){
 
     var u = new User({
         username: request.body.username,
-        password: request.body.password
+        password: request.body.password,
+        date:Date.now()
     });
     u.save(function(err){
     mongo.obj.disconnect();
@@ -33,12 +34,11 @@ srv.post(routes.Reg,jsonParser,function(request,response){
 
 })
 srv.get(routes.updateCredentials,jsonParser,function(request,response){
-    if(!request.body) return response.sendStatus(400);
-    //var res = db.update(request.body); Дореализовать
+    if(!request.body) return response.sendStatus(403);
     response.json({status:"ok"});
 })
 srv.post(routes.getCredentials,jsonParser,function(request,response){
-    if(!request.body) return response.sendStatus(400);
+    if(!request.body) return response.sendStatus(403);
     console.log("here");
     var searchmodel = {
         username: request.body.username,
