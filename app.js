@@ -44,6 +44,8 @@ srv.post(routes.getCredentials,jsonParser,function(request,response){
         username: request.body.username,
         password: request.body.password
     }
+   	console.log(searchmodel);
+
     User.find(searchmodel,function(error,data){
         if(error) response.sendStatus(404);
 
@@ -53,4 +55,4 @@ srv.post(routes.getCredentials,jsonParser,function(request,response){
 
 
 
-srv.listen(3000);
+srv.listen(3001);
