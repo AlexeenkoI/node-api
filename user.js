@@ -3,7 +3,7 @@ var userSchema = new mongoose.Schema({
     
     //id : Number, 
 
-    username:{
+    email:{
         type:String, 
         required:[true,"usernameError"], // Данное поле обязательно. Если его нет вывести ошибку с текстом usernameRequired
         maxlength:[32,"maxLengthError"],           
@@ -21,7 +21,7 @@ var userSchema = new mongoose.Schema({
     },
 
      date : Date,
-    // token : String,
+     token : String,
 });
 
 module.exports.user = mongoose.model('User',userSchema);
