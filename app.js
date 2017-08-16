@@ -55,33 +55,45 @@ srv.post(routes.getCredentials,jsonParser,function(request,response){
     if(!request.body){
         response.sendStatus(403);
     }
-    if(request.body.data.token){
-        User.find({token:request.body.token},function(error,data){
-            if(error)response.sendStatus(404);
+    // if(request.body.data.token){
+    //     User.find({token:request.body.token},function(error,data){
+    //         if(error)response.sendStatus(404);
 
-            console.log(data);
-        })
-    } 
+    //         console.log(data);
+    //     })
+    // } 
     console.log("here");
     var searchmodel = {
         email: request.body.data.email,
         password: request.body.data.password
     }
-    console.log(searchmodel);
+    //console.log(searchmodel);
     //var test = TokenGen();
-    console.log(test);
+    var tokenGen = TokenGen();
+    //console.log(test);
+    // data.update({token:tokenGen},function(err,data){
+    //     if(err) console.log(err);
+    //     console.log(data);
+    //     })
+    var id;
     User.find(searchmodel,function(error,data){
         if(error) response.sendStatus(404);
+        id = data._id;
+        
+    })
 
-        response.json({
+    User.update({searchmodel},{token:tokenGen},function(err,data){
+        if(err) console.log("err");
+        console.log("ok");
+    })
+    response.json({
         "success": true,
         "message": "authorized",
         "data": {
-            "id": u._id,
-            "token": TokenGen()
+            "id": id,
+            "token": tokenGen
             }
         });
-    })
 })
 
 function TokenGen(){
