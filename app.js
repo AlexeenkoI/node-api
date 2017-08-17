@@ -17,9 +17,9 @@ srv.post(routes.Reg,jsonParser,function(request,response){
     //if(!request.body) return response.sendStatus(400);
 
     var u = new User({
-        email: request.body.Email,
-        password: request.body.Password,
-        name : request.body.Name,
+        email: request.body.data.Email,
+        password: request.body.data.Password,
+        name : request.body.data.Name,
         date:Date.now()
     });
     console.log(u);
@@ -67,7 +67,8 @@ srv.post(routes.getCredentials,jsonParser,function(request,response){
     console.log("here");
     var searchmodel = {
         email: request.body.data.email,
-        password: request.body.data.password
+        password: request.body.data.password,
+        name:request.body.data.name
     }
     //console.log(searchmodel);
     //var test = TokenGen();
