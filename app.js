@@ -13,13 +13,13 @@ srv.get(routes.requestReg,function(request,response){
     response.end("here");
 })
 srv.post(routes.Reg,jsonParser,function(request,response){
-	console.log("Reg START");    
+	console.log(request.body);    
     //if(!request.body) return response.sendStatus(400);
 
     var u = new User({
-        email: request.body.data.Email,
-        password: request.body.data.Password,
-        name : request.body.data.Name,
+        email: request.body.Data.Email,
+        password: request.body.Data.Password,
+        name : request.body.Data.Name,
         date:Date.now()
     });
     console.log(u);
@@ -64,11 +64,11 @@ srv.post(routes.getCredentials,jsonParser,function(request,response){
     //         console.log(data);
     //     })
     // } 
-    console.log("here");
+    console.log(request.body);
     var searchmodel = {
-        email: request.body.data.email,
-        password: request.body.data.password,
-        name:request.body.data.name
+        email: request.body.Data.Email,
+        password: request.body.Data.Password,
+        name:request.body.Data.Name
     }
     //console.log(searchmodel);
     //var test = TokenGen();
