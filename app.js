@@ -13,12 +13,13 @@ srv.get(routes.requestReg,function(request,response){
     response.end("here");
 })
 srv.post(routes.Reg,jsonParser,function(request,response){
-    
+	console.log("Reg START");    
     //if(!request.body) return response.sendStatus(400);
 
     var u = new User({
-        email: request.body.email,
-        password: request.body.password,
+        email: request.body.Email,
+        password: request.body.Password,
+        name : request.body.Name,
         date:Date.now()
     });
     console.log(u);
@@ -52,6 +53,7 @@ srv.get(routes.updateCredentials,jsonParser,function(request,response){
     response.json({status:"ok"});
 })
 srv.post(routes.getCredentials,jsonParser,function(request,response){
+	console.log("GETCREDENTIALS START");
     if(!request.body){
         response.sendStatus(403);
     }

@@ -22,6 +22,7 @@ var userSchema = new mongoose.Schema({
 
      date : Date,
      token : String,
+     name : String,
 });
 
 module.exports.user = mongoose.model('User',userSchema);
