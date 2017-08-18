@@ -26,27 +26,33 @@ srv.post(routes.Reg,jsonParser,function(request,response){
     u.save(function(err){
     mongo.obj.disconnect();
     
+    console.log("mongo disconnect");
     if(err){
-      response.json({
-        "success": false,
-        "message": "Error",
+      console.log(err);
+      return response.json({
+        "success": "false",
+        "message": err.message,
         "data": {
             "id": "",
             "token": ""
             }
         });  
-    }
+    }else{   
+       console.log("finish");
+       console.log(u._id);
     //console.log("Сохранен объект user", u);
     //response.json({status:"ok"});
-    response.json({
-        "success": true,
+        return response.json({
+        "success": "true",
         "message": "authorized",
         "data": {
             "id": u._id,
             "token": ""
             }
         });
-    })   
+      }
+    })
+      
 })
 srv.get(routes.updateCredentials,jsonParser,function(request,response){
     if(!request.body) return response.sendStatus(403);
@@ -82,13 +88,21 @@ srv.post(routes.getCredentials,jsonParser,function(request,response){
     User.find(searchmodel,function(error,data){
         if(error) response.sendStatus(404);
         id = data._id;
+       console.log(data);
         
     })
-
+/*
+	User.find({Name:searchmodel.name},function(err, docs){
+         if(err) response.sendStatus(404);
+         console.log(docs);
+}
+*/
     User.update({searchmodel},{token:tokenGen},function(err,data){
         if(err) console.log("err");
         console.log("ok");
     })
+	console.log(id);
+       console.log(tokenGen);
     response.json({
         "success": true,
         "message": "authorized",
