@@ -9,9 +9,6 @@ var statusMessage = require("./constants/Messages");
 var srv = express();
 var jsonParser = parser.json();
 
-srv.get(routes.requestReg,function(request,response){
-    response.end("here");
-})
 srv.post(routes.Reg,jsonParser,function(request,response){
     var answer = new responseModel();
     if(!request.body){
@@ -36,10 +33,8 @@ srv.post(routes.Reg,jsonParser,function(request,response){
     });
           
 })
-srv.get(routes.updateCredentials,jsonParser,function(request,response){
-    if(!request.body) return response.sendStatus(403);
-    response.json({status:"ok"});
-})
+
+
 srv.post(routes.getCredentials,jsonParser,function(request,response){
     var answer = new responseModel();
     var id;
