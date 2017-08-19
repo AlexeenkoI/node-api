@@ -4,113 +4,67 @@ var express = require("express");
 var parser = require("body-parser");
 var User = require("./user").user;
 var mongo = require("./dbinit");
-
+var responseModel = require("./responsemodels/LoginModel");
+var statusMessage = require("./constants/Messages");
 var srv = express();
-
 var jsonParser = parser.json();
 
 srv.get(routes.requestReg,function(request,response){
     response.end("here");
 })
 srv.post(routes.Reg,jsonParser,function(request,response){
-	console.log(request.body);    
-    //if(!request.body) return response.sendStatus(400);
-
+    var answer = new responseModel();
+    if(!request.body){
+        return response.json(answer.noCredentials);
+    }
     var u = new User({
         email: request.body.Data.Email,
         password: request.body.Data.Password,
         name : request.body.Data.Name,
         date:Date.now()
     });
-    console.log(u);
-    u.save(function(err){
-    mongo.obj.disconnect();
-    
-    console.log("mongo disconnect");
+    console.log("start validate");
+    u.save(function(err){ 
     if(err){
-      console.log(err);
-      return response.json({
-        "success": "false",
-        "message": err.message,
-        "data": {
-            "id": "",
-            "token": ""
-            }
-        });  
+        console.log(err);
+        return response.json(answer.noResponseFromDatabase);  
     }else{   
-       console.log("finish");
-       console.log(u._id);
-    //console.log("Сохранен объект user", u);
-    //response.json({status:"ok"});
-        return response.json({
-        "success": "true",
-        "message": "authorized",
-        "data": {
-            "id": u._id,
-            "token": ""
-            }
-        });
-      }
-    })
-      
+        console.log("finish");
+        answer.buildResponse(true,statusMessage.successReg,u._id,null,u.name);
+        return response.json(answer.response);
+        }
+    });
+          
 })
 srv.get(routes.updateCredentials,jsonParser,function(request,response){
     if(!request.body) return response.sendStatus(403);
     response.json({status:"ok"});
 })
 srv.post(routes.getCredentials,jsonParser,function(request,response){
+    var answer = new responseModel();
+    var id;
+    var responseData;  
 	console.log("GETCREDENTIALS START");
     if(!request.body){
-        response.sendStatus(403);
+        return response.json(answer.noCredentials);
     }
-    // if(request.body.data.token){
-    //     User.find({token:request.body.token},function(error,data){
-    //         if(error)response.sendStatus(404);
-
-    //         console.log(data);
-    //     })
-    // } 
+    var tokenGen = TokenGen();
     console.log(request.body);
     var searchmodel = {
         email: request.body.Data.Email,
         password: request.body.Data.Password,
         name:request.body.Data.Name
     }
-    //console.log(searchmodel);
-    //var test = TokenGen();
-    var tokenGen = TokenGen();
-    //console.log(test);
-    // data.update({token:tokenGen},function(err,data){
-    //     if(err) console.log(err);
-    //     console.log(data);
-    //     })
-    var id;
-    User.find(searchmodel,function(error,data){
-        if(error) response.sendStatus(404);
-        id = data._id;
-       console.log(data);
-        
-    })
-/*
-	User.find({Name:searchmodel.name},function(err, docs){
-         if(err) response.sendStatus(404);
-         console.log(docs);
-}
-*/
-    User.update({searchmodel},{token:tokenGen},function(err,data){
-        if(err) console.log("err");
-        console.log("ok");
-    })
-	console.log(id);
-       console.log(tokenGen);
-    response.json({
-        "success": true,
-        "message": "authorized",
-        "data": {
-            "id": id,
-            "token": tokenGen
-            }
-        });
+    console.log("start validate");
+
+    User.findOneAndUpdate(searchmodel,{token:tokenGen},{new:true},function(err,result){
+        if(err){
+            return response.json(answer.noCredentials)
+        }else{
+            answer.buildResponse(true,statusMessage.successAuth,result._id,result.token,result.name);
+            return response.json(answer.response);
+        }
+    });
 })
 
 function TokenGen(){
@@ -125,24 +79,3 @@ function TokenGen(){
 }
 
 srv.listen(3000);
-/*
-login
-{
-  "success": true,
-  "message": "string",
-  "data": {
-    "id": "string",
-    "token": "string"
-  }
-}
-
-registration
-{
-  "success": true,
-  "message": "string",
-  "data": {
-    "id": "string",
-    "token": "string"
-  }
-}
-*/

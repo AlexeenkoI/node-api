@@ -3,11 +3,7 @@ var config = require('./config')
 //mongoose.Promise = require('bluebird');
 mongoose.Promise = global.Promise;
 
-module.exports.db = mongoose.connect(config.url,{
-    server:{
-        poolSize : 10
-    }
-}).then(console.log("succ"));
+module.exports.db = mongoose.connect(config.url,{ useMongoClient: true }).then(console.log("succ"));
 
 
 module.exports.obj = mongoose;
