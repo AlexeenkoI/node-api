@@ -6,6 +6,8 @@ var User = require("./user").user;
 var mongo = require("./dbinit");
 var responseModel = require("./responsemodels/LoginModel");
 var statusMessage = require("./constants/Messages");
+var loginValidator = require("./validators/loginValidator");
+var authValidator = require("./validators/authValidator");
 var srv = express();
 var jsonParser = parser.json();
 
@@ -14,24 +16,45 @@ srv.post(routes.Reg,jsonParser,function(request,response){
     if(!request.body){
         return response.json(answer.noCredentials);
     }
-    var u = new User({
+    var searchModel = {
         email: request.body.Data.Email,
         password: request.body.Data.Password,
-        name : request.body.Data.Name,
-        date:Date.now()
-    });
-    console.log("start validate");
-    u.save(function(err){ 
-    if(err){
-        console.log(err);
-        return response.json(answer.noResponseFromDatabase);  
-    }else{   
-        console.log("finish");
-        answer.buildResponse(true,statusMessage.successReg,u._id,null,u.name);
-        return response.json(answer.response);
+        name:request.body.Data.Name
+    }
+    loginValidator(searchModel)
+    .then(res=>{
+        if(!res.length){
+            console.log("not found in database.");
+            console.log("build user schema");
+            var u = new User({
+                email: request.body.Data.Email,
+                password: request.body.Data.Password,
+                name : request.body.Data.Name,
+                date:Date.now(),
+                token:null
+            });
+            console.log(u);
+            console.log("saving user...");
+            u.save()
+            .then((res)=>{
+                console.log("user saved, id:");
+                console.log(res._id);
+                answer.buildResponse(true,statusMessage.successReg,u._id,null,u.name);
+                return response.json(answer.response);
+            })
+            .catch(()=>{
+                console.log("error in database while saving");
+                return response.json(answer.noResponseFromDatabase);
+            });    
+        }else{
+            console.log("such user found");
+            return response.json(answer.userAlreadyExsists);
         }
-    });
-          
+    })
+    .catch(error=>{
+        console.log("error in database while finding");
+        return response.json(answer.noResponseFromDatabase);
+    });   
 })
 
 
@@ -39,27 +62,42 @@ srv.post(routes.getCredentials,jsonParser,function(request,response){
     var answer = new responseModel();
     var id;
     var responseData;  
-	console.log("GETCREDENTIALS START");
+	console.log("Authentification start");
     if(!request.body){
         return response.json(answer.noCredentials);
     }
-    var tokenGen = TokenGen();
-    console.log(request.body);
-    var searchmodel = {
+    var searchModel = {
         email: request.body.Data.Email,
         password: request.body.Data.Password,
         name:request.body.Data.Name
     }
-    console.log("start validate");
-
-    User.findOneAndUpdate(searchmodel,{token:tokenGen},{new:true},function(err,result){
-        if(err){
-            return response.json(answer.noCredentials)
+    authValidator(searchModel)
+    .then(res=>{
+        if(!res.length){
+            console.log("user not found");
+            return response.json(answer.noAuth);
         }else{
-            answer.buildResponse(true,statusMessage.successAuth,result._id,result.token,result.name);
-            return response.json(answer.response);
+            console.log("find user:");
+            console.log(res);
+            responseData = res[0];
+            User.findOneAndUpdate(res,{token:TokenGen()},{new:true})
+            .then(res=>{
+                console.log("token updated");
+                console.log("updated data:");
+                console.log(responseData);
+                answer.buildResponse(true,statusMessage.successAuth,res._id,res.token,res.name);
+                return response.json(answer.response);
+            })
+            .catch(()=>{
+                console.log("error in database while updating");
+                return response.json(answer.noResponseFromDatabase);
+            })
         }
-    });
+    })
+    .catch(()=>{
+        console.log("error in database while finding");
+        return response.json(answer.noResponseFromDatabase);
+    })
 })
 
 function TokenGen(){
