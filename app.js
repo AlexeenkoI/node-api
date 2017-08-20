@@ -13,6 +13,7 @@ var jsonParser = parser.json();
 
 srv.post(routes.Reg,jsonParser,function(request,response){
     var answer = new responseModel();
+    console.log("Login start");
     if(!request.body){
         return response.json(answer.noCredentials);
     }
@@ -60,8 +61,6 @@ srv.post(routes.Reg,jsonParser,function(request,response){
 
 srv.post(routes.getCredentials,jsonParser,function(request,response){
     var answer = new responseModel();
-    var id;
-    var responseData;  
 	console.log("Authentification start");
     if(!request.body){
         return response.json(answer.noCredentials);
