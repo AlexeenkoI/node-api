@@ -19,7 +19,6 @@ var userSchema = new mongoose.Schema({
         minlength:[8, "minLengthError"],
         match:[/^[A-Za-z0-9]+$/,"passwordIncorrect"]                
     },
-
      date : Date,
      token : String,
      name : String,
